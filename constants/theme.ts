@@ -1,53 +1,120 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
-import { Platform } from 'react-native';
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
-export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
-  },
-};
+import { Platform } from "react-native";
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+    sans: "system-ui",
+    serif: "ui-serif",
+    rounded: "ui-rounded",
+    mono: "ui-monospace",
   },
   default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
+    sans: "normal",
+    serif: "serif",
+    rounded: "normal",
+    mono: "monospace",
   },
   web: {
     sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
+    rounded:
+      "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
     mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
   },
 });
+
+export const baseThemes = {
+  teslaDark: {
+    id: "tesla-dark",
+    colors: {
+      background: "#0B0D0E",
+      surface: "#15191B",
+      textPrimary: "#F4F4F4",
+      textSecondary: "#A9B3AE",
+      textMuted: "#7D8882",
+      separator: "rgba(255,255,255,0.08)",
+      borderStrong: "rgba(255,255,255,0.16)",
+      overlay: "rgba(0, 0, 0, 0.52)",
+      onAccent: "#120910",
+    },
+  },
+} as const;
+
+export const accentThemes = {
+  wicked: {
+    id: "wicked",
+    colors: {
+      accent: "#FF4FA3",
+      accentSoft: "#FF7DBB",
+      quoteAccent: "#FF9BC9",
+      income: "#3BD18A",
+      expense: "#FF6A6A",
+      highlightTransparent: "rgba(255, 79, 163, 0)",
+      highlight: "rgba(255, 79, 163, 0.14)",
+      dangerSoft: "rgba(255, 106, 106, 0.12)",
+    },
+  },
+} as const;
+
+export function createTheme(
+  baseTheme = baseThemes.teslaDark,
+  accentTheme = accentThemes.wicked,
+) {
+  return {
+    id: `${baseTheme.id}:${accentTheme.id}`,
+    baseTheme,
+    accentTheme,
+    colors: {
+      ...baseTheme.colors,
+      ...accentTheme.colors,
+    },
+    fonts: Fonts,
+    spacing: {
+      xs: 4,
+      sm: 8,
+      md: 16,
+      lg: 24,
+      xl: 32,
+    },
+    radius: {
+      sm: 8,
+      md: 16,
+      lg: 32,
+    },
+    typography: {
+      title: 24,
+      subtitle: 20,
+      body: 17,
+      caption: 14,
+    },
+    layout: {
+      screenPadding: 20,
+      rowInset: 20,
+      rowAmountWidth: 112,
+      fabRight: 24,
+      fabBottom: 34,
+    },
+  } as const;
+}
+
+export const theme = createTheme();
+
+export const Colors = {
+  light: {
+    text: theme.colors.textPrimary,
+    background: theme.colors.background,
+    tint: theme.colors.accent,
+    icon: theme.colors.textSecondary,
+    tabIconDefault: theme.colors.textSecondary,
+    tabIconSelected: theme.colors.accent,
+  },
+  dark: {
+    text: theme.colors.textPrimary,
+    background: theme.colors.background,
+    tint: theme.colors.accent,
+    icon: theme.colors.textSecondary,
+    tabIconDefault: theme.colors.textSecondary,
+    tabIconSelected: theme.colors.accent,
+  },
+} as const;
+
+export type AppTheme = typeof theme;
