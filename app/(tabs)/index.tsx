@@ -1,5 +1,5 @@
-import { LedgerScreen } from "../../screens/LedgerScreen";
+import { HomeScreen } from "@/screens/HomeScreen";
 
-export default function Page() {
-  return <LedgerScreen />;
+export default function HomePage() {
+  return <HomeScreen />;
 }

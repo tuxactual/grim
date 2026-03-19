@@ -6,6 +6,7 @@ import { LedgerFeedbackRow } from "./LedgerFeedbackRow";
 type TransactionListProps = {
   transactions: Transaction[];
   highlightedTransactionId?: string | null;
+  onCompleteTransaction?: (transactionId: string) => void;
 };
 
 type LedgerRowItem =
@@ -112,6 +113,7 @@ function buildLedgerSections(transactions: Transaction[]) {
 export function TransactionList({
   transactions,
   highlightedTransactionId = null,
+  onCompleteTransaction,
 }: TransactionListProps) {
   const sections = buildLedgerSections(transactions);
 
@@ -137,6 +139,7 @@ export function TransactionList({
                     <LedgerFeedbackRow
                       transaction={item.transaction}
                       isNew={item.transaction.id === highlightedTransactionId}
+                      onComplete={onCompleteTransaction}
                     />
                   )}
                   {showSeparator ? <View style={styles.separator} /> : null}

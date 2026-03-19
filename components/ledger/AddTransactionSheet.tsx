@@ -19,6 +19,7 @@ import { parseAmount } from "@/utils/amount";
 type AddTransactionSheetProps = {
   isOpen: boolean;
   isSaving?: boolean;
+  allowedTypes?: ("expense" | "income")[];
   onClose: () => void;
   onSave: (input: {
     type: "expense" | "income";
@@ -35,10 +36,12 @@ const INCOME_CATEGORIES = ["Paycheck", "Bonus", "Refund", "Gift"] as const;
 export function AddTransactionSheet({
   isOpen,
   isSaving = false,
+  allowedTypes = ["expense", "income"],
   onClose,
   onSave,
 }: AddTransactionSheetProps) {
-  const [type, setType] = useState<"expense" | "income">("expense");
+  const initialType = allowedTypes[0] ?? "expense";
+  const [type, setType] = useState<"expense" | "income">(initialType);
   const [merchant, setMerchant] = useState("");
   const [amount, setAmount] = useState("");
   const [expenseCategory, setExpenseCategory] = useState<(typeof EXPENSE_CATEGORIES)[number]>(
@@ -58,13 +61,13 @@ export function AddTransactionSheet({
 
   useEffect(() => {
     if (!isOpen) {
-      setType("expense");
+      setType(initialType);
       setMerchant("");
       setAmount("");
       setExpenseCategory(EXPENSE_CATEGORIES[0]);
       setIncomeCategory(INCOME_CATEGORIES[0]);
     }
-  }, [isOpen]);
+  }, [initialType, isOpen]);
 
   const amountCents = parseAmount(amount);
   const selectedCategory = type === "expense" ? expenseCategory : incomeCategory;
@@ -179,40 +182,42 @@ export function AddTransactionSheet({
           >
             <View style={styles.handle} />
             <Text style={styles.title}>New entry</Text>
-            <View style={styles.toggle}>
-              <Pressable
-                onPress={() => setType("expense")}
-                style={[
-                  styles.toggleButton,
-                  type === "expense" && { backgroundColor: theme.colors.accentSoft },
-                ]}
-              >
-                <Text
+            {allowedTypes.length > 1 ? (
+              <View style={styles.toggle}>
+                <Pressable
+                  onPress={() => setType("expense")}
                   style={[
-                    styles.toggleLabel,
-                    type === "expense" && { color: theme.colors.accent },
+                    styles.toggleButton,
+                    type === "expense" && { backgroundColor: theme.colors.accentSoft },
                   ]}
                 >
-                  Expense
-                </Text>
-              </Pressable>
-              <Pressable
-                onPress={() => setType("income")}
-                style={[
-                  styles.toggleButton,
-                  type === "income" && styles.incomeToggleActive,
-                ]}
-              >
-                <Text
+                  <Text
+                    style={[
+                      styles.toggleLabel,
+                      type === "expense" && { color: theme.colors.accent },
+                    ]}
+                  >
+                    Expense
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setType("income")}
                   style={[
-                    styles.toggleLabel,
-                    type === "income" && { color: theme.colors.income },
+                    styles.toggleButton,
+                    type === "income" && styles.incomeToggleActive,
                   ]}
                 >
-                  Income
-                </Text>
-              </Pressable>
-            </View>
+                  <Text
+                    style={[
+                      styles.toggleLabel,
+                      type === "income" && { color: theme.colors.income },
+                    ]}
+                  >
+                    Income
+                  </Text>
+                </Pressable>
+              </View>
+            ) : null}
             <Text style={styles.fieldLabel}>{nameLabel}</Text>
             <TextInput
               autoFocus
@@ -245,9 +250,9 @@ export function AddTransactionSheet({
                     key={category}
                     onPress={() => {
                       if (type === "expense") {
-                        setExpenseCategory(category);
+                        setExpenseCategory(category as (typeof EXPENSE_CATEGORIES)[number]);
                       } else {
-                        setIncomeCategory(category);
+                        setIncomeCategory(category as (typeof INCOME_CATEGORIES)[number]);
                       }
                     }}
                     style={[

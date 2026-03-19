@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
   FadeIn,
   Layout,
@@ -16,9 +16,10 @@ import { formatAmount } from "@/utils/amount";
 type LedgerFeedbackRowProps = {
   transaction: Transaction;
   isNew: boolean;
+  onComplete?: (transactionId: string) => void;
 };
 
-export function LedgerFeedbackRow({ transaction, isNew }: LedgerFeedbackRowProps) {
+export function LedgerFeedbackRow({ transaction, isNew, onComplete }: LedgerFeedbackRowProps) {
   const isExpense = transaction.amountCents < 0;
   const highlightOpacity = useSharedValue(0);
   const hasAnimatedRef = useRef(false);
@@ -57,12 +58,31 @@ export function LedgerFeedbackRow({ transaction, isNew }: LedgerFeedbackRowProps
           : undefined
       }
       layout={Layout.springify()}
-      style={[styles.row, animatedStyles]}
+      style={animatedStyles}
     >
-      <Text style={styles.merchant}>{transaction.merchant}</Text>
-      <Text style={[styles.amount, isExpense ? styles.expense : styles.income]}>
-        {formatAmount(transaction.amountCents)}
-      </Text>
+      <Pressable
+        disabled={transaction.isCompleted || !onComplete}
+        onPress={() => onComplete?.(transaction.id)}
+        style={[styles.row, transaction.isCompleted && styles.rowCompleted]}
+      >
+        <View style={styles.merchantBlock}>
+          <Text style={[styles.merchant, transaction.isCompleted && styles.completedText]}>
+            {transaction.merchant}
+          </Text>
+          {transaction.carriedForwardFromId ? (
+            <Text style={styles.meta}>Carried forward</Text>
+          ) : null}
+        </View>
+        <Text
+          style={[
+            styles.amount,
+            isExpense ? styles.expense : styles.income,
+            transaction.isCompleted && styles.completedText,
+          ]}
+        >
+          {formatAmount(transaction.amountCents)}
+        </Text>
+      </Pressable>
     </Animated.View>
   );
 }
@@ -76,11 +96,21 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     gap: theme.spacing.md,
   },
-  merchant: {
+  rowCompleted: {
+    opacity: 0.7,
+  },
+  merchantBlock: {
     flex: 1,
+    gap: 2,
+  },
+  merchant: {
     color: theme.colors.textPrimary,
     fontSize: theme.typography.body,
     fontWeight: "500",
+  },
+  meta: {
+    color: theme.colors.textMuted,
+    fontSize: theme.typography.caption,
   },
   amount: {
     width: theme.layout.rowAmountWidth,
@@ -96,5 +126,9 @@ const styles = StyleSheet.create({
   },
   expense: {
     color: theme.colors.accent,
+  },
+  completedText: {
+    textDecorationLine: "line-through",
+    color: theme.colors.textMuted,
   },
 });
