@@ -24,7 +24,7 @@ function formatLiabilityMeta(liability: LiabilityEntry) {
     parts.push(liability.category);
   }
 
-  return parts.join(" • ");
+  return parts.join(" - ");
 }
 
 export function IncomeScreen() {

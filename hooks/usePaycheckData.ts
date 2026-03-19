@@ -25,7 +25,6 @@ const seedIncomeEntries: IncomeEntry[] = [
 ];
 
 const seedAllocations: IncomeAllocation[] = [];
-
 const seedManualLiabilities: LiabilityEntry[] = [];
 
 function getDateKey(input: string | Date) {
