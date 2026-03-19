@@ -1,5 +1,5 @@
-import { LedgerScreen } from "../../screens/LedgerScreen";
+import { IncomeScreen } from "../../screens/IncomeScreen";
 
 export default function Page() {
-  return <LedgerScreen />;
+  return <IncomeScreen />;
 }
